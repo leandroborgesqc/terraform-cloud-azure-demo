@@ -39,3 +39,44 @@ resource "azurerm_network_interface" "myvmnic" {
   }
   tags = local.common_tags
 }
+
+# Network security group and rules to allow ssh and http
+resource "azurerm_network_security_group" "mynsg" {
+  name                = "Allow-SSH-HTTP"
+  location            = azurerm_resource_group.myrg.location
+  resource_group_name = azurerm_resource_group.myrg.name
+  tags                = local.common_tags
+}
+
+resource "azurerm_network_security_rule" "mynsgrule-ssh" {
+  name                        = "SSH"
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.myrg.name
+  network_security_group_name = azurerm_network_security_group.mynsg.name
+}
+
+resource "azurerm_network_security_rule" "mynsgrule-http" {
+  name                        = "HTTP"
+  priority                    = 1002
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.myrg.name
+  network_security_group_name = azurerm_network_security_group.mynsg.name
+}
+
+resource "azurerm_network_interface_security_group_association" "network_interface_security_group_association" {
+  network_interface_id      = azurerm_network_interface.myvmnic.id
+  network_security_group_id = azurerm_network_security_group.mynsg.id
+}
