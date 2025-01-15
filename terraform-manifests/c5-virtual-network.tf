@@ -13,7 +13,7 @@ resource "azurerm_subnet" "mysubnet" {
   resource_group_name  = azurerm_resource_group.myrg.name
   virtual_network_name = azurerm_virtual_network.myvnet.name
   address_prefixes     = ["10.0.2.0/24"]
-  private_endpoint_network_policies = "Enabled"
+  private_endpoint_network_policies = "Disabled"
 }
 
 # Create Public IP Address
